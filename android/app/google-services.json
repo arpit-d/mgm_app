@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "478735354575",
+    "firebase_url": "https://mgm-app-e3ba6.firebaseio.com",
+    "project_id": "mgm-app-e3ba6",
+    "storage_bucket": "mgm-app-e3ba6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478735354575:android:be1e4861720e8a2dccc5ba",
+        "android_client_info": {
+          "package_name": "com.jnecproject.mgm_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "478735354575-sir4aq0a8ciegq6cv46qssshkaa0m7ko.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jnecproject.mgm_app",
+            "certificate_hash": "2560d906133e58a9a6e2041a20731c18f5769c05"
+          }
+        },
+        {
+          "client_id": "478735354575-oi5rhuin5id3kj6psp51ql8uk08qeuu6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYbhowjqM_Dv8HJS4uTwTlbdBL8eEepe8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "478735354575-oi5rhuin5id3kj6psp51ql8uk08qeuu6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
