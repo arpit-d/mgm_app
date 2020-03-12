@@ -208,7 +208,7 @@ class _VaccBodyState extends State<VaccBody> {
     var uid=user.uid;
     print(uid);
     return StreamBuilder(
-      stream: vaccTaken.document(uid).collection('Vaccine Administered').snapshots(),
+      stream: vaccTaken.document(uid).collection('VaccineAdministered').snapshots(),
       builder: (context,snapshot) {
         if(snapshot.hasData){
           return Container(
@@ -219,10 +219,12 @@ class _VaccBodyState extends State<VaccBody> {
                 itemBuilder: (BuildContext context, int index){
                   print(snapshot.data);
                   DocumentSnapshot user = snapshot.data.documents[index];
-                  return Text(
-                    'data is there'
-                    //title: Text(user.data['name']),
-                    //subtitle: Text(user.data['vaccine given']),
+                  return ListTile(
+                    
+                      title: Text(user.data['name'],
+                      style: TextStyle(fontSize: 14)),
+                      subtitle: Text(user.data['vaccine given'],
+                      style: TextStyle(fontSize: 14)),
                   );
                   
                 }
