@@ -25,21 +25,27 @@ class DatabaseService {
   }
   //vacc list from snapshot
 
-  UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
-    print(snapshot.data);
+  UserData _userDataFromSnapshot(DocumentSnapshot ds) {
+    print(ds.data);
     return UserData(
       uid: uid,
-      name: snapshot.data['name'],
-      vaccineName: snapshot.data['vaccine given'],
+      name: ds.data['name'],
+      vaccineName: ds.data['vaccine given'],
     );
     
   }
 
-  Stream<UserData> get userData {
-    return vaccTaken.document(uid).collection('VaccineAdministered').document().snapshots()
-      .map(_userDataFromSnapshot);
-      
-  }
+  Stream<List<UserData>> get userData {
+  return vaccTaken
+      .document(uid)
+      .collection('Vaccine Administered')
+      .getDocuments()
+      .asStream()
+      .map((qs) {
+    return qs.documents.map((ds) => _userDataFromSnapshot(ds));
+  });
+}
+
 
   
     //get vacc stream

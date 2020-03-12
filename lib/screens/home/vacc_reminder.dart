@@ -203,28 +203,42 @@ class _VaccBodyState extends State<VaccBody> {
   
   @override
   Widget build(BuildContext context) {
+    CollectionReference vaccTaken = Firestore.instance.collection('User');
     final user = Provider.of<User>(context);
+    var uid=user.uid;
+    print(uid);
     return StreamBuilder(
-      stream: DatabaseService(uid: user.uid).userData,
+      stream: vaccTaken.document(uid).collection('Vaccine Administered').snapshots(),
       builder: (context,snapshot) {
         if(snapshot.hasData){
           return Container(
           child: Column(
             children: <Widget>[
               Expanded(child: ListView.builder(
-                itemCount: snapshot.data.length,
+                itemCount: snapshot.data.documents.length,
                 itemBuilder: (BuildContext context, int index){
-                  return new Text(snapshot.data[index]);
+                  print(snapshot.data);
+                  DocumentSnapshot user = snapshot.data.documents[index];
+                  return Text(
+                    'data is there'
+                    //title: Text(user.data['name']),
+                    //subtitle: Text(user.data['vaccine given']),
+                  );
+                  
                 }
               ))
             ],
           )
         );
-        }else{
-        return Container(
-          child: Text('No data')
+        }else if (snapshot.connectionState == ConnectionState.done && !snapshot.hasData) {
+        // Handle no data
+        return Center(
+            child: Text("No users found.")
         );
-        }
+      }
+      else {
+        return CircularProgressIndicator();
+      }
       }
     );
   }
