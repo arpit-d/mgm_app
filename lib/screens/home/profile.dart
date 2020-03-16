@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner:false,
-  home: MedHist(),
+  home: Profile(),
 ));
-class MedHist extends StatelessWidget {
+class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Medical History'),
+        title: Text('User Profile'),
         backgroundColor: Color(0xFF05b39e),
       ),
-      body: MedHistBody(),
+      body: ProfileBody(),
     );
   }
 }
-class MedHistBody extends StatelessWidget {
+class ProfileBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(

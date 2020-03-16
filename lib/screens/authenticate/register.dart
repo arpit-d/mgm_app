@@ -29,7 +29,7 @@ class _RegisterState extends State<Register> {
         actions: <Widget>[
           FlatButton.icon(
             icon: Icon(Icons.person),
-            color: Colors.white,
+            
             label: Text('Sign In'),
             onPressed: (){
               widget.toggleView();
@@ -39,62 +39,66 @@ class _RegisterState extends State<Register> {
       ),
       body: Center(
         child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.width,
           padding: EdgeInsets.fromLTRB(30, 90, 30, 0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 20),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Email',
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 20),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                    ),
+                    validator: (val) => val.isEmpty ? 'Enter an email!':null,
+                    onChanged: (val){
+                      setState(() => email = val);
+                    },
                   ),
-                  validator: (val) => val.isEmpty ? 'Enter an email!':null,
-                  onChanged: (val){
-                    setState(() => email = val);
-                  },
-                ),
 
-                SizedBox(height: 20),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Password'
+                  SizedBox(height: 20),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'Password'
+                    ),
+                    validator: (val) => val.length <6 ? 'Enter 6 digit password':null,
+                    obscureText: true,
+                    onChanged: (val){
+                      setState(() => password = val);
+                    },
                   ),
-                  validator: (val) => val.length <6 ? 'Enter 6 digit password':null,
-                  obscureText: true,
-                  onChanged: (val){
-                    setState(() => password = val);
-                  },
-                ),
-                SizedBox(height: 20),
-                RaisedButton(
-                  color: Color(0xFF2196F3),
-                  child: Text(
-                    'Sign Up',
-                  ),
-                  onPressed: () async {
-                    if(_formKey.currentState.validate()){
-                      setState(() {
-                        loading = true;
-                      });
-                      @override
-                      dynamic result = await _auth.registerWithEmailAndPassword(email, password);
-                      if (result == null){
+                  SizedBox(height: 20),
+                  RaisedButton(
+                    color: Color(0xFF2196F3),
+                    child: Text(
+                      'Sign Up',
+                    ),
+                    onPressed: () async {
+                      if(_formKey.currentState.validate()){
                         setState(() {
-                          error = 'Invalid Email';
-                          loading = false;
+                          loading = true;
                         });
+                        @override
+                        dynamic result = await _auth.registerWithEmailAndPassword(email, password);
+                        if (result == null){
+                          setState(() {
+                            error = 'Invalid Email';
+                            loading = false;
+                          });
+                        }
                       }
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: 20,
+                    },
                   ),
-                  Text(error,
-                  style: TextStyle(color: Colors.red,fontSize: 16)
-                  )
-              ],
+                  SizedBox(
+                    height: 20,
+                    ),
+                    Text(error,
+                    style: TextStyle(color: Colors.red,fontSize: 16)
+                    )
+                ],
+              ),
             ),
           ),
         )

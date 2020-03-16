@@ -37,55 +37,59 @@ class _SignInState extends State<SignIn> {
       ),
       body: Center(
         child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.width,
           padding: EdgeInsets.fromLTRB(30, 40, 30, 0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 20),
-                TextFormField(
-                  validator: (val) => val.isEmpty ? 'Incorrect email!':null,
-                  onChanged: (val){
-                    setState(() => email = val);
-                  },
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  validator: (val) => val.isEmpty ? 'Invalid password':null,
-                  obscureText: true,
-                  onChanged: (val){
-                    
-                    setState(() => password = val);
-                  },
-                ),
-                SizedBox(height: 20),
-                RaisedButton(
-                  color: Color(0xFF2196F3),
-                  child: Text(
-                    'Sign In',
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 20),
+                  TextFormField(
+                    validator: (val) => val.isEmpty ? 'Incorrect email!':null,
+                    onChanged: (val){
+                      setState(() => email = val);
+                    },
                   ),
-                  onPressed: () async {
-                    if(_formKey.currentState.validate()){
-                      setState(() => loading = true);
-                     dynamic result = await _auth.signInWithEmailAndPassword(email, password);
-                      if (result == null){
-                       setState(() {
+                  SizedBox(height: 20),
+                  TextFormField(
+                    validator: (val) => val.isEmpty ? 'Invalid password':null,
+                    obscureText: true,
+                    onChanged: (val){
+                      
+                      setState(() => password = val);
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  RaisedButton(
+                    color: Color(0xFF2196F3),
+                    child: Text(
+                      'Sign In',
+                    ),
+                    onPressed: () async {
+                      if(_formKey.currentState.validate()){
+                        setState(() => loading = true);
+                       dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+                        if (result == null){
+                         setState(() {
+                           
+                           loading = false;
+                           error = 'Invalid Credentials!';
                          
-                         loading = false;
-                         error = 'Invalid Credentials!';
-                       
-                       });
+                         });
+                        }
                       }
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: 20,
+                    },
                   ),
-                  Text(error,
-                  style: TextStyle(color: Colors.red,fontSize: 16)
-                  )
-              ],
+                  SizedBox(
+                    height: 20,
+                    ),
+                    Text(error,
+                    style: TextStyle(color: Colors.red,fontSize: 16)
+                    )
+                ],
+              ),
             ),
           ),
         )

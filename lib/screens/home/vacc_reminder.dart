@@ -121,69 +121,72 @@ final AuthService _auth = AuthService();
   @override
   Widget build(BuildContext context) {
      return Container(
- 
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.width,
           padding: EdgeInsets.fromLTRB(5,5, 5, 5),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(height: 15),
-                  Text(
-                    "Select vaccine you have been given!",
-                    style: TextStyle(
-                      fontSize: 20,
-                      
-                    ),
-                    ),
-                  
-                  SizedBox(height: 20),
-                  DropdownButton(
-                    value: _selectedVaccine,
-                    items: _dropDownMenuItems,
-                    onChanged: onChangeDropdownItem,
-                     
-                  ),
-                  SizedBox(height: 20),
-                  Text('Selected: ${_selectedVaccine.vaccName}'),
-                  SizedBox(height: 20),
-                  RaisedButton(
-                    child: Text('Pick a Date'),
-                    onPressed: (){
-                      showDatePicker(context: context, initialDate: _dateTime == null?DateTime.now():_dateTime,
-                       firstDate: DateTime(2000), 
-                       lastDate: DateTime.now()
-                       ).then((date){
-                         setState((){
-                           _dateTime = date;
-                            converted = convertDate(_dateTime);
-                         });
-                       });
-                      
-                    },
-                  
-                  ),
-                  
-                  SizedBox(height: 20),
-
-                  Text(
-                    '$converted',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  SizedBox(height: 20),
-                  RaisedButton(
-                    onPressed:() async {
-                     await _auth.enterVaccineData(_selectedVaccine.vaccName, converted);
-                    },
-                    child: Text('Submit'),
-                  )
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    SizedBox(height: 15),
+                    Text(
+                      "Select vaccine you have been given!",
+                      style: TextStyle(
+                        fontSize: 20,
+                        
+                      ),
+                      ),
                     
-                  
+                    SizedBox(height: 20),
+                    DropdownButton(
+                      value: _selectedVaccine,
+                      items: _dropDownMenuItems,
+                      onChanged: onChangeDropdownItem,
+                       
+                    ),
+                    SizedBox(height: 20),
+                    Text('Selected: ${_selectedVaccine.vaccName}'),
+                    SizedBox(height: 20),
+                    RaisedButton(
+                      child: Text('Pick a Date'),
+                      onPressed: (){
+                        showDatePicker(context: context, initialDate: _dateTime == null?DateTime.now():_dateTime,
+                         firstDate: DateTime(2000), 
+                         lastDate: DateTime.now()
+                         ).then((date){
+                           setState((){
+                             _dateTime = date;
+                              converted = convertDate(_dateTime);
+                           });
+                         });
+                        
+                      },
+                    
+                    ),
+                    
+                    SizedBox(height: 20),
+
+                    Text(
+                      '$converted',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(height: 20),
+                    RaisedButton(
+                      onPressed:() async {
+                       await _auth.enterVaccineData(_selectedVaccine.vaccName, converted);
+                      },
+                      child: Text('Submit'),
+                    )
+                      
+                    
 
 
 
-                ],
+                  ],
          ),
+              ),
             )
          
         );
@@ -239,7 +242,9 @@ class _VaccBodyState extends State<VaccBody> {
         );
       }
       else {
-        return CircularProgressIndicator();
+        return Center(
+          child: CircularProgressIndicator()
+        );
       }
       }
     );

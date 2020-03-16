@@ -1,3 +1,4 @@
+import 'package:mgm_app/screens/home/profile.dart';
 import 'package:mgm_app/services/auth.dart';
 import 'package:mgm_app/services/database.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,31 @@ class Home extends StatelessWidget {
               label: Text('logout'))
             ]
         ),
-        body: BodyPage()
+        body: BodyPage(),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                child: Text('Hello UserName',
+                style: TextStyle(color: Colors.white),
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.red
+                ),
+              ),
+              ListTile(
+                title: Text('Profile'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Profile()),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
       ); 
     
   }
@@ -177,7 +202,7 @@ class BodyPage extends StatelessWidget {
                 onTap: () {
                  Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PatientHist()),
+                    MaterialPageRoute(builder: (context) => MedHist()),
                   );
                 },
             
