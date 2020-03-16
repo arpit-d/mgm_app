@@ -44,8 +44,8 @@ class AuthService{
   }
 Future<String> inputData() async {
     final FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    final String uid = user.uid.toString();
-    return uid;
+    final String userName = user.email.toString();
+    return userName;
   }
 
   Future enterVaccineData(String vaccName, String dateAdmin) async {

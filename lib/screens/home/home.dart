@@ -2,7 +2,7 @@ import 'package:mgm_app/screens/home/profile.dart';
 import 'package:mgm_app/services/auth.dart';
 import 'package:mgm_app/services/database.dart';
 import 'package:provider/provider.dart';
-
+import 'package:mgm_app/models/user.dart';
 import 'vacc_reminder.dart';
 import 'pill_reminder.dart';
 import 'consult_followup.dart';
@@ -10,6 +10,8 @@ import 'patient_med.dart';
 import 'discharge_summary.dart'; 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mgm_app/screens/wrapper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner:false,
@@ -21,10 +23,47 @@ void main() => runApp(MaterialApp(
       ),
 ));
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
+  FirebaseUser currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
+  }
+
+  void _loadCurrentUser() {
+    FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
+      setState(() { // call setState to rebuild the view
+        this.currentUser = user;
+      });
+    });
+  }
+
+  String _email() {
+    if (currentUser != null) {
+      return currentUser.email.substring(0, currentUser.email.indexOf("@"));
+    } else {
+      return "no current user";
+    }
+  }
+
+    
+  
   @override
   Widget build(BuildContext context) {
+
+    
+ 
+
+    
     return Scaffold(
         appBar: AppBar(
             title: Text('MGM Hospital'),
@@ -43,12 +82,22 @@ class Home extends StatelessWidget {
             padding: EdgeInsets.zero,
             children: <Widget>[
               DrawerHeader(
-                child: Text('Hello UserName',
-                style: TextStyle(color: Colors.white),
-                ),
                 decoration: BoxDecoration(
                   color: Colors.red
                 ),
+                child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                      child: Text('Hello '+_email(),
+                      style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+               ),
               ),
               ListTile(
                 title: Text('Profile'),
@@ -66,9 +115,16 @@ class Home extends StatelessWidget {
     
   }
 }
-class BodyPage extends StatelessWidget {
+class BodyPage extends StatefulWidget {
+  @override
+  _BodyPageState createState() => _BodyPageState();
+}
+
+class _BodyPageState extends State<BodyPage> {
+
   @override
   Widget build(BuildContext context) {
+
     return Center(
       child: Column(
        // mainAxisAlignment: MainAxisAlignment.spaceBetween,

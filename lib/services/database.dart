@@ -22,35 +22,8 @@ class DatabaseService {
       'vaccine given': dateAdmin,
   }
  );
-  }
-  //vacc list from snapshot
-
-  UserData _userDataFromSnapshot(DocumentSnapshot ds) {
-    print(ds.data);
-    return UserData(
-      uid: uid,
-      name: ds.data['name'],
-      vaccineName: ds.data['vaccine given'],
-    );
-    
-  }
-
-  Stream<List<UserData>> get userData {
-  return vaccTaken
-      .document(uid)
-      .collection('Vaccine Administered')
-      .getDocuments()
-      .asStream()
-      .map((qs) {
-    return qs.documents.map((ds) => _userDataFromSnapshot(ds));
-  });
+  } 
+  
 }
 
 
-  
-    //get vacc stream
-    
-  }
-
-
-//get vacc stream

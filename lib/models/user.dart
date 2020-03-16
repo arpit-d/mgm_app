@@ -1,15 +1,10 @@
-class User{
-  final String uid;
-  User({this.uid});
-}
-
-class UserData {
+class User {
 
   final String uid;
   final String name;
   final String vaccineName;
  
 
-  UserData({ this.uid, this.name, this.vaccineName});
+  User({ this.uid, this.name, this.vaccineName});
 
 }
