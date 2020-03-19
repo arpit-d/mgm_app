@@ -10,9 +10,11 @@ class DatabaseService {
 
   CollectionReference vaccTaken = Firestore.instance.collection('User');
 
-  Future regUserData(String email) async {
+  Future regUserData(String email, String userName, String converted) async {
     return await vaccTaken.document(uid).setData({
       'email': email,
+      'userName': userName,
+      'dob': converted,
     });
   }
 

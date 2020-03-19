@@ -203,12 +203,64 @@ class VaccBody extends StatefulWidget {
 
 class _VaccBodyState extends State<VaccBody> {
   
+
+  deleteData(){
+    
+  }
+  showOptions(){
+    return showDialog<void>(
+    context: context,
+    barrierDismissible: true, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              FlatButton(
+                padding: EdgeInsets.all(2),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Delete the entry?',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ),
+                onPressed: (){
+                  print('hola');
+                },
+                ),
+              SizedBox(height: 15,)
+            ],
+          ),
+        ),
+        actions: <Widget>[
+           FlatButton(
+            child: Text('Yes', style: TextStyle(fontSize: 22)),
+            onPressed: () {
+              
+            },
+          ),
+          FlatButton(
+            child: Text('Close', style: TextStyle(fontSize: 22)),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+  }
+  
   @override
   Widget build(BuildContext context) {
     CollectionReference vaccTaken = Firestore.instance.collection('User');
     final user = Provider.of<User>(context);
     var uid=user.uid;
     print(uid);
+    print('hello');
     return StreamBuilder(
       stream: vaccTaken.document(uid).collection('VaccineAdministered').snapshots(),
       builder: (context,snapshot) {
@@ -219,14 +271,23 @@ class _VaccBodyState extends State<VaccBody> {
               Expanded(child: ListView.builder(
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (BuildContext context, int index){
-                  print(snapshot.data);
+                  
                   DocumentSnapshot user = snapshot.data.documents[index];
-                  return ListTile(
+                  return Container(
                     
-                      title: Text(user.data['name'],
-                      style: TextStyle(fontSize: 14)),
-                      subtitle: Text(user.data['vaccine given'],
-                      style: TextStyle(fontSize: 14)),
+                    margin: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                        child: ListTile(
+                        onLongPress: () {
+                          showOptions();
+                        },
+                        title: Text(user.data['name'],
+                        style: TextStyle(fontSize: 18)),
+                        subtitle: Text(user.data['vaccine given'],
+                        style: TextStyle(fontSize: 16)),
+                    ),
                   );
                   
                 }
