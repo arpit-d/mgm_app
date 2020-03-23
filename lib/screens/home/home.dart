@@ -13,7 +13,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mgm_app/screens/wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'hosp_loc.dart';
-
+import 'package:mgm_app/models/vaccList.dart';
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner:false,
   home: Home(),
@@ -31,30 +31,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+ 
+
   final AuthService _auth = AuthService();
-  FirebaseUser currentUser;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCurrentUser();
-  }
-
-  void _loadCurrentUser() {
-    FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
-      setState(() { // call setState to rebuild the view
-        this.currentUser = user;
-      });
-    });
-  }
-
-  String _email() {
-    if (currentUser != null) {
-      return currentUser.uid;
-    } else {
-      return "no current user";
-    }
-  }
+  
 
     
   
@@ -92,7 +72,7 @@ class _HomeState extends State<Home> {
                   Expanded(
                   child: Align(
                     alignment: Alignment.bottomCenter,
-                      child: Text('Hello '+_email(),
+                      child: Text('Hello ',
                       style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -128,11 +108,11 @@ class _BodyPageState extends State<BodyPage> {
 
     return SingleChildScrollView(
           child: Center(
-        child: Column(
+            child: Column(
          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
+              children: <Widget>[
             // VACCINATION REMINDER
-            Card(
+                Card(
               margin: EdgeInsets.fromLTRB(12, 25, 12, 6),
               child: InkWell(
                   splashColor: Colors.red.withAlpha(80),

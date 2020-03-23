@@ -1,12 +1,19 @@
+import 'package:mgm_app/screens/home/profile.dart';
+import 'package:mgm_app/services/auth.dart';
+import 'package:mgm_app/services/database.dart';
+import 'package:provider/provider.dart';
+import 'package:mgm_app/models/user.dart';
+import 'vacc_reminder.dart';
+import 'pill_reminder.dart';
+import 'consult_followup.dart';
+import 'patient_med.dart';
+import 'discharge_summary.dart'; 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
-import 'package:mgm_app/services/auth.dart';
-import 'package:mgm_app/models/vaccList.dart';
-import 'package:mgm_app/screens/home/vacc_tile.dart';
-import 'dart:async';
-import 'package:mgm_app/models/user.dart';
+import 'package:mgm_app/screens/wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'hosp_loc.dart';
+import 'package:mgm_app/models/vaccList.dart';
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner:false,
   home: VaccHome(),
@@ -16,297 +23,62 @@ class VaccHome extends StatefulWidget {
   _VaccHomeState createState() => _VaccHomeState();
 }
 
-class Vaccine {
-  String vaccName;
-  //String date;
-  Vaccine(this.vaccName);
-
-  static List<Vaccine> getVaccine(){
-    return <Vaccine>[
-      Vaccine('Rabies'),
-      Vaccine('Ebola'),
-      Vaccine('SARS'),
-      Vaccine('Polio'),
-      Vaccine('Chickenpox'),
-      Vaccine('Hepatatis A'),
-      Vaccine('Hepatatis B'),
-    ];
-  }
-  }
-
 class _VaccHomeState extends State<VaccHome> {
-  
-
- void  _bottSheet(context) async {
-     showModalBottomSheet(
-      context: context,
-      builder: (BuildContext bc){
-        return ModalContent(
-        );
-      }
-    ); 
-  }
-
-  
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Vaccination Reminder'),
-        backgroundColor: Color(0xFF05b39e),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _bottSheet(context);
-        },
-        child: Icon(Icons.add),
-        backgroundColor:  Color(0xFF05b39e),
-      ),
-      body: VaccBody(),
-      
-    );
+            appBar: AppBar(title: Text('Vaccination Reminder'),
+            backgroundColor: Colors.red[400]),
+            body: VaccBody(),
+                    
+      );
   }
 }
 
-
-
-class ModalContent extends StatefulWidget {
-  @override
-  _ModalContentState createState() => _ModalContentState();
-}
-
-class _ModalContentState extends State<ModalContent> {
-final _formKey = GlobalKey<FormState>();
-  DateTime _dateTime;
-  VaccList v = new VaccList();
-  List<Vaccine> _vaccines = Vaccine.getVaccine();
-  List<DropdownMenuItem<Vaccine>> _dropDownMenuItems;
-  Vaccine _selectedVaccine;
-  @override
-  void initState(){
-    _dropDownMenuItems = buildDropdownMenuItems(_vaccines);
-    _selectedVaccine = _dropDownMenuItems[0].value;
-    super.initState();
-  }
-
-  List<DropdownMenuItem<Vaccine>> buildDropdownMenuItems(List vaccines) {
-    List<DropdownMenuItem<Vaccine>> items = List();
-    for(Vaccine vaccine in vaccines) {
-      items.add(DropdownMenuItem(value: vaccine, child: Text(vaccine.vaccName),));
-    }
-    return items;
-  }
-
-  onChangeDropdownItem(Vaccine selectedVaccine) {
-    setState(() {
-      _selectedVaccine = selectedVaccine;
-
-    });
-  }
-  var converted;
-
-  
-  
-  String convertDate(DateTime _dateTime){
-    var dateTime = DateTime.parse(_dateTime.toString());
-    var formattedDate = "${dateTime.day}-${dateTime.month}-${dateTime.year}";
-    return formattedDate;
-  }
-
-final AuthService _auth = AuthService();
-
-
-  @override
-  Widget build(BuildContext context) {
-     return Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.fromLTRB(5,5, 5, 5),
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    SizedBox(height: 15),
-                    Text(
-                      "Select vaccine you have been given!",
-                      style: TextStyle(
-                        fontSize: 20,
-                        
-                      ),
-                      ),
-                    
-                    SizedBox(height: 20),
-                    DropdownButton(
-                      value: _selectedVaccine,
-                      items: _dropDownMenuItems,
-                      onChanged: onChangeDropdownItem,
-                       
-                    ),
-                    SizedBox(height: 20),
-                    Text('Selected: ${_selectedVaccine.vaccName}'),
-                    SizedBox(height: 20),
-                    RaisedButton(
-                      child: Text('Pick a Date'),
-                      onPressed: (){
-                        showDatePicker(context: context, initialDate: _dateTime == null?DateTime.now():_dateTime,
-                         firstDate: DateTime(2000), 
-                         lastDate: DateTime.now()
-                         ).then((date){
-                           setState((){
-                             _dateTime = date;
-                              converted = convertDate(_dateTime);
-                           });
-                         });
-                        
-                      },
-                    
-                    ),
-                    
-                    SizedBox(height: 20),
-
-                    Text(
-                      '$converted',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(height: 20),
-                    RaisedButton(
-                      onPressed:() async {
-                       await _auth.enterVaccineData(_selectedVaccine.vaccName, converted);
-                      },
-                      child: Text('Submit'),
-                    )
-                      
-                    
-
-
-
-                  ],
-         ),
-              ),
-            )
-         
-        );
-  }
-
-  
-
-}
 class VaccBody extends StatefulWidget {
   @override
   _VaccBodyState createState() => _VaccBodyState();
 }
 
-
-
 class _VaccBodyState extends State<VaccBody> {
-  
 
-  deleteData(){
-    
+  FirebaseUser currentUser;
+ String emailResult;
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
   }
-  showOptions(){
-    return showDialog<void>(
-    context: context,
-    barrierDismissible: true, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              FlatButton(
-                padding: EdgeInsets.all(2),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Delete the entry?',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                ),
-                onPressed: (){
-                  print('hola');
-                },
-                ),
-              SizedBox(height: 15,)
-            ],
-          ),
-        ),
-        actions: <Widget>[
-           FlatButton(
-            child: Text('Yes', style: TextStyle(fontSize: 22)),
-            onPressed: () {
-              
-            },
-          ),
-          FlatButton(
-            child: Text('Close', style: TextStyle(fontSize: 22)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
+
+  void _loadCurrentUser() {
+    FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
+      email(user).then((String result) {
+      setState(() { // call setState to rebuild the view
+        this.currentUser = user;
+        this.emailResult = result;
+       });
+      });
+    });
   }
-  
+
+  Future<String> email(user) async {
+    var d;
+    if (user != null) {
+      await Firestore.instance.collection('User').document(user.uid).get().then((data){
+        d = (data.data['dob'].toString());  
+      });
+      return d;
+    } else {
+      return "no current user";
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    CollectionReference vaccTaken = Firestore.instance.collection('User');
-    final user = Provider.of<User>(context);
-    var uid=user.uid;
-    print(uid);
-    print('hello');
-    return StreamBuilder(
-      stream: vaccTaken.document(uid).collection('VaccineAdministered').snapshots(),
-      builder: (context,snapshot) {
-        if(snapshot.hasData){
-          return Container(
-          child: Column(
-            children: <Widget>[
-              Expanded(child: ListView.builder(
-                itemCount: snapshot.data.documents.length,
-                itemBuilder: (BuildContext context, int index){
-                  
-                  DocumentSnapshot user = snapshot.data.documents[index];
-                  return Container(
-                    
-                    margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                        child: ListTile(
-                        onLongPress: () {
-                          showOptions();
-                        },
-                        title: Text(user.data['name'],
-                        style: TextStyle(fontSize: 18)),
-                        subtitle: Text(user.data['vaccine given'],
-                        style: TextStyle(fontSize: 16)),
-                    ),
-                  );
-                  
-                }
-              ))
-            ],
-          )
-        );
-        }else if (snapshot.connectionState == ConnectionState.done && !snapshot.hasData) {
-        // Handle no data
-        return Center(
-            child: Text("No users found.")
-        );
-      }
-      else {
-        return Center(
-          child: CircularProgressIndicator()
-        );
-      }
-      }
+    return Container(
+      child: Text('$emailResult'??'no'),
     );
   }
 }
