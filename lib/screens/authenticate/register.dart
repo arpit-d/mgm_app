@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mgm_app/services/auth.dart';
 import 'package:mgm_app/shared/loading.dart';
+ 	
+
 class Register extends StatefulWidget {
   final Function toggleView;
   Register({this.toggleView});
@@ -18,11 +21,13 @@ class _RegisterState extends State<Register> {
   String error = '';
   String userName = '';
   DateTime _dateTime;
-  var converted;
+  var dateTime;
 
-  String convertDate(DateTime _dateTime){
-    var dateTime = DateTime.parse(_dateTime.toString());
-    var formattedDate = "${dateTime.day}-${dateTime.month}-${dateTime.year}";
+  String convertDate(DateTime _dateTime) {
+    
+    var dateTime = DateFormat('dd-MM-yyyy');
+    var formattedDate = dateTime.format(_dateTime);
+    print(formattedDate);
     return formattedDate;
   }
 
@@ -76,7 +81,7 @@ class _RegisterState extends State<Register> {
                         },
                       ),
                       SizedBox(height: 20),
-                      SizedBox(height: 20),
+                      
                       TextFormField(
                         decoration: InputDecoration(hintText: 'Username'),
                         validator: (val) =>
@@ -87,25 +92,56 @@ class _RegisterState extends State<Register> {
                       ),
                       SizedBox(height: 20),
                       RaisedButton(
-                      child: Text('Pick a Date'),
-                      onPressed: (){
-                        showDatePicker(context: context, initialDate: _dateTime == null?DateTime.now():_dateTime,
-                         firstDate: DateTime(2000), 
-                         lastDate: DateTime.now()
-                         ).then((date){
-                           setState((){
-                             _dateTime = date;
-                              converted = convertDate(_dateTime);
-                           });
-                         });
-                        
-                      },
-                    
-                    ),
+                        textColor: Colors.white,
+                        padding: const EdgeInsets.all(0.0),
+                        shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(80)),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: <Color>[
+                                  Color.fromARGB(255, 148, 231, 225),
+                                  Color.fromARGB(255, 62, 182, 226)
+                                ],
+                              ),
+                                //borderRadius: BorderRadius.all(Radius.circular(80.0))
+                              ),
+                              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                              child: const Text('Select Birthday',
+                              style: TextStyle(fontSize: 20)),
+                        ),
+                        onPressed: () {
+                          showDatePicker(
+                                  context: context,
+                                  initialDate: _dateTime == null
+                                      ? DateTime.now()
+                                      : _dateTime,
+                                  firstDate: DateTime(1920),
+                                  lastDate: DateTime.now())
+                              .then((date) {
+                            setState(() {
+                              _dateTime = date;
+                              dateTime = convertDate(_dateTime);
+                            });
+                          });
+                        },
+                      ),
                       RaisedButton(
-                        color: Color(0xFF2196F3),
-                        child: Text(
-                          'Sign Up',
+                        textColor: Colors.white,
+                        padding: const EdgeInsets.all(0.0),
+                        shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(80)),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: <Color>[
+                                  Color.fromARGB(255, 148, 231, 225),
+                                  Color.fromARGB(255, 62, 182, 226)
+                                ],
+                              ),
+                                //borderRadius: BorderRadius.all(Radius.circular(80.0))
+                              ),
+                              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                              child: const Text('Sign Up',
+                              style: TextStyle(fontSize: 20)),
                         ),
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
@@ -115,7 +151,7 @@ class _RegisterState extends State<Register> {
                             @override
                             dynamic result =
                                 await _auth.registerWithEmailAndPassword(
-                                    email, password, userName, converted);
+                                    email, password, userName, dateTime);
                             if (result == null) {
                               setState(() {
                                 error = 'Invalid Email';
@@ -134,8 +170,6 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
               ),
-            )
-          )
-         );
+            )));
   }
 }
