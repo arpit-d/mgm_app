@@ -48,11 +48,11 @@ Future<String> inputData() async {
     return userName;
   }
 
-  Future enterVaccineData(String vaccName, String dateAdmin) async {
+  Future enterPillData(String pillName, String startTime, String reminderTime) async {
     try{
       final FirebaseUser user = await FirebaseAuth.instance.currentUser();
       final String uid = user.uid.toString();
-      await DatabaseService(uid: user.uid).updateUserData(vaccName, dateAdmin);
+      await DatabaseService(uid: user.uid).updateUserData(pillName, startTime, reminderTime);
       return _userFromFirebaseUser(user);
 
     }
@@ -62,12 +62,12 @@ Future<String> inputData() async {
   }
 
   //register with email/pass
-  Future registerWithEmailAndPassword(String email, String password, String userName, String dateTime) async {
+  Future registerWithEmailAndPassword(String email, String password, String userName, String dateTime, String deviceToken) async {
     try{
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
       //create new document for user with their uid
-      await DatabaseService(uid: user.uid).regUserData(email,userName, dateTime);
+      await DatabaseService(uid: user.uid).regUserData(email,userName, dateTime, deviceToken);
       return _userFromFirebaseUser(user);
     }
     catch(e){

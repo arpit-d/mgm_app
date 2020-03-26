@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mgm_app/services/auth.dart';
@@ -22,6 +23,7 @@ class _RegisterState extends State<Register> {
   String userName = '';
   DateTime _dateTime;
   var dateTime;
+  String deviceToken = '';
 
   String convertDate(DateTime _dateTime) {
     
@@ -31,6 +33,19 @@ class _RegisterState extends State<Register> {
     return formattedDate;
   }
 
+    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+    _getToken(){
+    _firebaseMessaging.getToken().then((deviceT) {
+      setState(() {
+        deviceToken = deviceT;
+      });
+    });
+  } 
+  @override
+  void initState() {
+    super.initState();
+    _getToken();
+  }
   @override
   Widget build(BuildContext context) {
     return loading
@@ -149,9 +164,10 @@ class _RegisterState extends State<Register> {
                               loading = true;
                             });
                             @override
+
                             dynamic result =
                                 await _auth.registerWithEmailAndPassword(
-                                    email, password, userName, dateTime);
+                                    email, password, userName, dateTime, deviceToken);
                             if (result == null) {
                               setState(() {
                                 error = 'Invalid Email';
