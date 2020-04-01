@@ -10,20 +10,20 @@ class DatabaseService {
 
   CollectionReference vaccTaken = Firestore.instance.collection('User');
 
-  Future regUserData(String email, String userName, String dateTime, String deviceToken) async {
+  Future regUserData(String email, String userName, String dateTime) async {
     return await vaccTaken.document(uid).setData({
       'email': email,
       'userName': userName,
       'dob': dateTime,
-      'deviceToken': deviceToken
     });
   }
 
-  Future updateUserData(String pillName,String startTime, String reminderTime) async {
-   return await vaccTaken.document(uid).collection('PillReminder').document().setData({
-     'name': pillName,
-      'startTime': startTime,
-      'reminderTime': reminderTime,
+  Future updateUserData(String type,String realDate, String hm) async {
+   return await vaccTaken.document(uid).collection('ConsultReminder').document().setData({
+     'type': type,
+      'date': realDate,
+      'time': hm,
+      
   }
  );
   } 

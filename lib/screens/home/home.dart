@@ -157,12 +157,12 @@ class _BodyPageState extends State<BodyPage> {
               margin: EdgeInsets.fromLTRB(12, 10, 12, 7),
               child: InkWell(
                   splashColor: Colors.red.withAlpha(80),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PillHome()),
-                    );
-                  },
+                  // onTap: () {
+                  //   Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(builder: (context) => PillHome()),
+                  //   );
+                  // },
               
               child: Column(
                 mainAxisSize: MainAxisSize.min,

@@ -5,12 +5,14 @@ import 'package:intl/intl.dart';
 import 'package:mgm_app/services/auth.dart';
 import 'package:mgm_app/notification/NotificationManager.dart';
 import 'package:mgm_app/services/moor_database.dart';
+import 'package:mgm_app/shared/loading.dart';
 
-
-void main() => runApp(MaterialApp(
-  debugShowCheckedModeBanner:false,
+void main ()=> runApp(MaterialApp(
   home: PillHome(),
 ));
+
+final MyDatabase database = MyDatabase();
+final NotificationManager notificationManager = NotificationManager();
 class PillHome extends StatefulWidget {
   @override
   _PillHomeState createState() => _PillHomeState();
@@ -22,24 +24,35 @@ class _PillHomeState extends State<PillHome> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Pill Reminder'),
+        backgroundColor: Colors.red[400],
       ),
-      body: AddMedicine(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: ()  {
+          return bottSheet(context);
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.red[400],
+      ),
+      body: PillBody(),
     );
+  }
+  void bottSheet(context) async {
+    showModalBottomSheet(context: context, builder: (BuildContext bc){
+      return ModalContent();
+    });
+  }
 }
-}
-class AddMedicine extends StatefulWidget {
-
+class ModalContent extends StatefulWidget {
   @override
-  _AddMedicineState createState() => _AddMedicineState();
+  _ModalContentState createState() => _ModalContentState();
 }
 
-class _AddMedicineState extends State<AddMedicine> {
+class _ModalContentState extends State<ModalContent> {
   static final _formKey = new GlobalKey<FormState>();
   String _name;
   String _dose;
   NotificationManager manager = NotificationManager();
-  MyDatabase _database = MyDatabase();
-
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -75,16 +88,7 @@ class _AddMedicineState extends State<AddMedicine> {
             SizedBox(
               height: 5,
             ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Shape',
-                style: TextStyle(fontWeight: FontWeight.w300, fontSize: 25),
-              ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
+            
             SizedBox(
               height: 15,
             ),
@@ -112,32 +116,35 @@ class _AddMedicineState extends State<AddMedicine> {
   }
 
 
-  Form _buildForm() {
+   _buildForm() {
     TextStyle labelsStyle =
         TextStyle(fontWeight: FontWeight.w400, fontSize: 25);
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: <Widget>[
-          TextFormField(
-            style: TextStyle(fontSize: 25),
-            decoration: InputDecoration(
-              labelText: 'Name',
-              labelStyle: labelsStyle,
+    return SingleChildScrollView(
+          child: Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              style: TextStyle(fontSize: 25),
+              decoration: InputDecoration(
+                labelText: 'Name',
+                labelStyle: labelsStyle,
+              ),
+              validator: (input) => (input.length < 5) ? 'Name is short' : null,
+              onSaved: (input) => _name = input,
             ),
-            validator: (input) => (input.length < 5) ? 'Name is short' : null,
-            onSaved: (input) => _name = input,
-          ),
-          TextFormField(
-            style: TextStyle(fontSize: 25),
-            decoration: InputDecoration(
-              labelText: 'Dose',
-              labelStyle: labelsStyle,
-            ),
-            validator: (input) => (input.length > 50) ? 'Dose is long' : null,
-            onSaved: (input) => _dose = input,
-          )
-        ],
+            TextFormField(
+              style: TextStyle(fontSize: 25),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Dose',
+                labelStyle: labelsStyle,
+              ),
+              validator: (input) => (input.length > 50) ? 'Dose is long' : null,
+              onSaved: (input) => _dose = input,
+            )
+          ],
+        ),
       ),
     );
   }
@@ -157,7 +164,7 @@ class _AddMedicineState extends State<AddMedicine> {
         int minute = selectedTime.minute;
         print(selectedTime);
         // insert into database
-        var medicineId = await _database.insertMedicine(
+        var medicineId = await database.insertMedicine(
             MedicinesTableData(
                 name: _name,
                 dose: _dose, id: null,));
@@ -171,3 +178,158 @@ class _AddMedicineState extends State<AddMedicine> {
     }
   }
 }
+class PillBody extends StatefulWidget {
+  
+  @override
+  _PillBodyState createState() => _PillBodyState();
+}
+
+class _PillBodyState extends State<PillBody> {
+
+  Future<List<MedicinesTableData>> getMedicineList() async {
+    return await database.getAllMedicines();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    setState(() {
+      
+    });
+    return buildMedicinesView();
+    
+  }
+
+  
+
+  FutureBuilder buildMedicinesView() {
+    return FutureBuilder(
+      future: getMedicineList(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          print(snapshot.data);
+          if (snapshot.data.length == 0) {
+            // No data
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  'lib/assets/no_not.png',
+                  height: 180,
+                  width: 180,
+                  fit: BoxFit.cover,
+                ),
+                
+              ],
+            );
+          }
+          return MedicineGridView(snapshot.data);
+          
+      } else {
+        return Container();
+      }
+      }
+    );
+  
+
+}
+}
+
+class MedicineGridView extends StatefulWidget {
+  final List<MedicinesTableData> list;
+  MedicineGridView(this.list);
+
+  @override
+  _MedicineGridViewState createState() => _MedicineGridViewState();
+}
+
+class _MedicineGridViewState extends State<MedicineGridView> {
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: 1,
+      shrinkWrap: true,
+      childAspectRatio: 5,
+      children: widget.list.map((medicine){
+        return MedicineCard(medicine);
+      }).toList(),
+    );
+  }
+}
+
+class MedicineCard extends StatefulWidget {
+  final MedicinesTableData medicine;
+  MedicineCard(this.medicine);
+
+  @override
+  _MedicineCardState createState() => _MedicineCardState();
+}
+
+class _MedicineCardState extends State<MedicineCard> {
+  Future<void> _deleteReminder(context,medicine) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text('Delete Reminder?'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('No',
+              style: TextStyle(
+                fontSize: 19,
+                color: Colors.black87,
+              ),
+            ),
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('Yes',
+              style: TextStyle(
+                fontSize: 19,
+              ),
+            ),
+              onPressed: (){
+                _deleteCard(medicine,context);
+
+              },
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  _deleteCard(medicine,context) async{
+    await database.deleteMedicine(medicine);
+     notificationManager.removeReminder(medicine.id);
+    print("medicine deleted" + medicine.toString());
+    Navigator.of(context).pop();
+    
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      child: InkWell(
+
+        onTap: (){
+          _deleteReminder(context,widget.medicine);
+        },
+          child: Card(
+            margin: EdgeInsets.all(4),
+          child: ListTile(
+            title: Text(widget.medicine.name),
+            subtitle: Text(widget.medicine.dose),
+          ),
+        ),
+      ),
+      
+    );
+  }
+}
+

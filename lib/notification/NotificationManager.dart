@@ -28,11 +28,22 @@ class NotificationManager {
 
   void showNotificationDaily(
       int id, String title, String body, int hour, int minute) async {
-    var time = new Time(hour, minute, 0);
+    var time =  Time(hour, minute, 0);
     await flutterLocalNotificationsPlugin.showDailyAtTime(
-        id, title, body, time, getPlatformChannelSpecfics());
+        id, title, body, time, getPlatformChannelSpecfics(),androidAllowWhileIdle: true);
     print('Notification Succesfully Scheduled at ${time.toString()}');
   }
+
+  void showApptNoti(
+      int id, String title, String body, int hour, int minute, int day) async {
+    
+    
+    var time =  Time(hour, minute, 0);
+    await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
+        id, title, body, Day.Wednesday, time, getPlatformChannelSpecfics());
+    print('Notification Succesfully Scheduled at ${time.toString()}');
+  }
+  
 
   getPlatformChannelSpecfics() {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -61,3 +72,5 @@ class NotificationManager {
     flutterLocalNotificationsPlugin.cancel(notificationId);
   }
 }
+
+

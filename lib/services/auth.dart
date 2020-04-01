@@ -48,17 +48,12 @@ Future<String> inputData() async {
     return userName;
   }
 
-  Future enterPillData(String pillName, String startTime, String reminderTime) async {
-    try{
-      final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+ 
+  Future enterConsultationData(String type,String realDate, String hm) async {
+    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
       final String uid = user.uid.toString();
-      await DatabaseService(uid: user.uid).updateUserData(pillName, startTime, reminderTime);
+      await DatabaseService(uid: user.uid).updateUserData(type, realDate, hm);
       return _userFromFirebaseUser(user);
-
-    }
-    catch(e){
-
-    }
   }
 
   //register with email/pass
@@ -67,7 +62,7 @@ Future<String> inputData() async {
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
       //create new document for user with their uid
-      await DatabaseService(uid: user.uid).regUserData(email,userName, dateTime, deviceToken);
+      await DatabaseService(uid: user.uid).regUserData(email,userName, dateTime);
       return _userFromFirebaseUser(user);
     }
     catch(e){
