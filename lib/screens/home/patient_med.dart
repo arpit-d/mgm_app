@@ -4,18 +4,77 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mgm_app/models/user.dart';
+import 'package:mgm_app/services/auth.dart';
+import 'package:provider/provider.dart';
+import 'package:path/path.dart';
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner:false,
   home: MedHist(),
 ));
-class MedHist extends StatelessWidget {
+class MedHist extends StatefulWidget {
+  @override
+  _MedHistState createState() => _MedHistState();
+}
+
+class _MedHistState extends State<MedHist> {
+  final AuthService _auth = AuthService();
+  File _image;
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
+    Future getImageFromCamera() async {
+      var image = await ImagePicker.pickImage(source: ImageSource.camera);
+      setState(() {
+        _image = image;
+        print('Image $_image');
+      });
+      
+      String fileName = basename(_image.path);
+      StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
+      StorageUploadTask uploadTask = reference.putFile(_image);
+      StorageTaskSnapshot snapshot = await uploadTask.onComplete;
+      setState(() {
+        print('success');
+      });
+    }
+    
+    Future getImageFromGallery() async {
+      var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        _image = image;
+        print('Image $_image');
+      });
+      String fileName = basename(_image.path);
+      StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
+      StorageUploadTask uploadTask = reference.putFile(_image);
+      StorageTaskSnapshot snapshot = await uploadTask.onComplete;
+      setState(() {
+        print('success');
+      });
+    }
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('Medical History'),
         backgroundColor: Color(0xFF05b39e),
+      ),
+      bottomNavigationBar: BottomAppBar(
+      color: Colors.white,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          IconButton(icon: Icon(Icons.camera_alt), onPressed: () {
+            getImageFromCamera();
+          }, color: Colors.teal,tooltip: 'Camera',),
+          IconButton(icon: Icon(Icons.photo_album), onPressed: () {
+            getImageFromGallery();
+           
+          },color: Colors.teal,tooltip: 'Gallery',),
+        ],
+      ),
       ),
       body: ImageF(),
     );
@@ -28,126 +87,13 @@ class ImageF extends StatefulWidget {
 }
 
 class _ImageFState extends State<ImageF> {
-
-  File _imageFile;
-
-
-
-  Future<void> _pickImage(ImageSource source) async {
-    File selected = await ImagePicker.pickImage(source: source);
-    setState(() {
-      _imageFile = selected;
-    });
-  }
-
-  Future<void> _cropImage() async {
-    File cropped = await ImageCropper.cropImage(
-      sourcePath: _imageFile.path,
-      
-    );
-    setState(() {
-      _imageFile = cropped??_imageFile;
-    });
-  }
-  void _clear() {
-    setState(()=> _imageFile = null);
-  }
-  
-
-  
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          children: <Widget>[
-            IconButton(
-              icon: Icon(Icons.photo_camera),
-              onPressed: () => _pickImage(ImageSource.camera),
-            ),
-            IconButton(
-              icon: Icon(Icons.photo_library),
-              onPressed: () => _pickImage(ImageSource.gallery),
-            ),
-            Expanded(
-                          child: ListView(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                
-        children: <Widget>[
-          if (_imageFile != null) ...[
-
-              Image.file(_imageFile),
-
-              Row(
-                children: <Widget>[
-                  FlatButton(
-                    child: Icon(Icons.crop),
-                    onPressed: _cropImage,
-                  ),
-                  FlatButton(
-                    child: Icon(Icons.refresh),
-                    onPressed: _clear,
-                  ),
-                ],
-              ),
-
-              Uploader(file: _imageFile)
-                  ]
-                ],
-              ),
-            ),
-          ],
-        ),
-      )
-      
+    return Builder(
+      builder: (context) => Container(
+        
+      ),
     );
   }
 }
 
-class Uploader extends StatefulWidget {
-  final File file;
-  Uploader({Key key,this.file}):super(key:key);
-  @override
-  _UploaderState createState() => _UploaderState();
-}
-
-class _UploaderState extends State<Uploader> {
-  @override
-  final FirebaseStorage _storage =
-      FirebaseStorage(storageBucket: 'gs://mgm-app-e3ba6.appspot.com');
-
-  StorageUploadTask _uploadTask;
-
-  /// Starts an upload task
-  void _startUpload() {
-
-    /// Unique file name for the file
-    String filePath = 'images/${DateTime.now()}.png';
-
-    setState(() {
-      _uploadTask = _storage.ref().child(filePath).putFile(widget.file);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_uploadTask != null) {
-
-      /// Manage the task state and event subscription with a StreamBuilder
-      
-
-          
-    } else {
-
-      // Allows user to decide when to start the upload
-      return FlatButton.icon(
-          label: Text('Upload to Firebase'),
-          icon: Icon(Icons.cloud_upload),
-          onPressed: _startUpload,
-        );
-
-    }
-  }
-}

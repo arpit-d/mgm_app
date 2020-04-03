@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mgm_app/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mgm_app/models/vaccList.dart';
@@ -9,12 +10,23 @@ class DatabaseService {
   DatabaseService({this.uid});
 
   CollectionReference vaccTaken = Firestore.instance.collection('User');
+  
 
-  Future regUserData(String email, String userName, String dateTime) async {
+  Future regUserData(String email, String userName, String dateTime, String uid) async {
     return await vaccTaken.document(uid).setData({
       'email': email,
       'userName': userName,
       'dob': dateTime,
+      'uid': uid,
+      'role': 'Patient'
+    });
+  }
+
+  Future updatePillData(String name, String dose, String hm) async {
+    return await vaccTaken.document(uid).collection('PillReminder').document().setData({
+      'name': name,
+      'dose': dose,
+      'time': hm,
     });
   }
 

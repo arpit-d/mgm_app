@@ -1,11 +1,14 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mgm_app/models/user.dart';
 import 'package:mgm_app/services/auth.dart';
 import 'package:mgm_app/notification/NotificationManager.dart';
 import 'package:mgm_app/services/moor_database.dart';
 import 'package:mgm_app/shared/loading.dart';
+import 'package:provider/provider.dart';
 
 void main ()=> runApp(MaterialApp(
   home: PillHome(),
@@ -150,6 +153,7 @@ class _ModalContentState extends State<ModalContent> {
   }
 
   void _submit(NotificationManager manager) async {
+    final AuthService _auth = AuthService();
     if (_formKey.currentState.validate()) {
       // form is validated
       _formKey.currentState.save();
@@ -162,18 +166,16 @@ class _ModalContentState extends State<ModalContent> {
       ).then((selectedTime) async {
         int hour = selectedTime.hour;
         int minute = selectedTime.minute;
+        var hm = hour.toString()+':'+minute.toString();
         print(selectedTime);
         // insert into database
-        var medicineId = await database.insertMedicine(
-            MedicinesTableData(
-                name: _name,
-                dose: _dose, id: null,));
+        await _auth.enterPillData(_name, _dose, hm);
         // sehdule the notification
-        manager.showNotificationDaily(medicineId, _name, _dose, hour, minute);
+        manager.showNotificationDaily(1,_name, _dose, hour, minute);
         // The medicine Id and Notitfaciton Id are the same
-        print('New Med id' + medicineId.toString());
+        
         // go back
-        Navigator.pop(context, medicineId);
+        Navigator.pop(context);
       });
     }
   }
@@ -185,54 +187,58 @@ class PillBody extends StatefulWidget {
 }
 
 class _PillBodyState extends State<PillBody> {
-
-  Future<List<MedicinesTableData>> getMedicineList() async {
-    return await database.getAllMedicines();
-  }
+ CollectionReference vacc = Firestore.instance.collection('User');
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      
-    });
-    return buildMedicinesView();
-    
+    final user = Provider.of<User>(context);
+    return SingleChildScrollView(
+          child: Container(
+          child: StreamBuilder(
+              stream: vacc
+                  .document(user.uid)
+                  .collection('PillReminder')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Container(
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: snapshot.data.documents.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                print(snapshot.data);
+                                DocumentSnapshot user =
+                                    snapshot.data.documents[index];
+                                return Card(
+                          
+                                  child: Container(
+                                    child: ListTile(
+                                      title: Text(user.data['name'],
+                                          style: TextStyle(fontSize: 14)),
+                                      subtitle: Text(user.data['dose']),
+                                    ),
+                                  ),
+                                );
+                              }),
+                        )
+                      ],
+                    ),
+                  );
+                } else if (snapshot.connectionState == ConnectionState.done &&
+                    !snapshot.hasData) {
+                  return Center(
+                    child: Text('No reminder set'),
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              })),
+    );
   }
 
-  
-
-  FutureBuilder buildMedicinesView() {
-    return FutureBuilder(
-      future: getMedicineList(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          print(snapshot.data);
-          if (snapshot.data.length == 0) {
-            // No data
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Image.asset(
-                  'lib/assets/no_not.png',
-                  height: 180,
-                  width: 180,
-                  fit: BoxFit.cover,
-                ),
-                
-              ],
-            );
-          }
-          return MedicineGridView(snapshot.data);
-          
-      } else {
-        return Container();
-      }
-      }
-    );
-  
-
-}
 }
 
 class MedicineGridView extends StatefulWidget {

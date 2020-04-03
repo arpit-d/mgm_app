@@ -230,7 +230,7 @@ class _ModalContentState extends State<ModalContent> {
                   showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
-                          firstDate: firstDateFunc(d),
+                          firstDate: DateTime.now().subtract(Duration(days: 0)),
                           lastDate: lastDateFunc(d))
                       .then((date) {
                     setState(() {
@@ -357,6 +357,8 @@ class _ModalContentState extends State<ModalContent> {
                     _submit(manager, dateNo);
                     await _auth.enterConsultationData(
                         _selectedAppt.type, realDate, hm);
+                        print('hello');
+                        Navigator.of(context).pop();
                     }
                   },
                   child: Container(

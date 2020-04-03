@@ -30,7 +30,7 @@ class NotificationManager {
       int id, String title, String body, int hour, int minute) async {
     var time =  Time(hour, minute, 0);
     await flutterLocalNotificationsPlugin.showDailyAtTime(
-        id, title, body, time, getPlatformChannelSpecfics(),androidAllowWhileIdle: true);
+        1, title, body, time, getPlatformChannelSpecfics());
     print('Notification Succesfully Scheduled at ${time.toString()}');
   }
 
@@ -40,7 +40,7 @@ class NotificationManager {
     
     var time =  Time(hour, minute, 0);
     await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
-        id, title, body, Day.Wednesday, time, getPlatformChannelSpecfics());
+        id, title, body, Day.Thursday, time, getPlatformChannelSpecfics());
     print('Notification Succesfully Scheduled at ${time.toString()}');
   }
   
