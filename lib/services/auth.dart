@@ -8,7 +8,7 @@ class AuthService{
   
   //create user obj based on firebaseUser
   User _userFromFirebaseUser(FirebaseUser user){
-    return user != null ? User(uid: user.uid) : null;
+    return user != null ? User(uid: user.uid, name: user.displayName) : null;
   }
   //auth change user stream
   Stream<User> get user{
@@ -43,7 +43,7 @@ class AuthService{
   }
 Future<String> inputData() async {
     final FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    final String userName = user.email.toString();
+    final String userName = user.displayName.toString();
     return userName;
   }
 
@@ -54,6 +54,14 @@ Future<String> inputData() async {
       await DatabaseService(uid: user.uid).updateUserData(type, realDate, hm);
       return _userFromFirebaseUser(user);
   }
+  Future drConsult(String type,String realDate, String hm, String drDate, String name) async {
+
+      final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+      final String uid = user.uid.toString();
+      await DatabaseService(uid: user.uid).drConsult(type, realDate, hm, drDate, name);
+      return _userFromFirebaseUser(user);
+  }
+
 
   Future enterPillData(String name,String dose, String hm) async {
     final FirebaseUser user = await FirebaseAuth.instance.currentUser();
@@ -65,9 +73,19 @@ Future<String> inputData() async {
   //register with email/pass
   Future registerWithEmailAndPassword(String email, String password, String userName, String dateTime, String deviceToken) async {
     try{
+      
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      
+      UserUpdateInfo updateInfo = UserUpdateInfo();
+      updateInfo.displayName = userName;
+    
       FirebaseUser user = result.user;
+      await user.reload();
+      await user.updateProfile(updateInfo);
+      await user.reload();
       String uid = user.uid.toString();
+      FirebaseUser updatedUser = await _auth.currentUser();
+      print('USERNAME IS: ${updatedUser.displayName}');
       //create new document for user with their uid
       await DatabaseService(uid: user.uid).regUserData(email,userName, dateTime, uid);
       return _userFromFirebaseUser(user);

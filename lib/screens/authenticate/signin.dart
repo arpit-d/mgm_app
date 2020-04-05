@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mgm_app/models/user.dart';
-import 'package:mgm_app/screens/home/dr_home.dart';
+import 'package:mgm_app/screens/home/dr_pages/dr_home.dart';
 import 'package:mgm_app/screens/home/home.dart';
 import 'package:mgm_app/services/auth.dart';
 import 'package:mgm_app/shared/loading.dart';

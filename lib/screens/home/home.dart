@@ -34,6 +34,30 @@ class _HomeState extends State<Home> {
  
 
   final AuthService _auth = AuthService();
+   FirebaseUser currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
+  }
+
+  void _loadCurrentUser() {
+    FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
+      setState(() { // call setState to rebuild the view
+        this.currentUser = user;
+      });
+    });
+  }
+
+  String _userName() {
+    if (currentUser != null) {
+      print(currentUser.displayName);
+      return currentUser.displayName.toString();
+    } else {
+      return "no current user";
+    }
+  }
   
 
     
@@ -72,7 +96,7 @@ class _HomeState extends State<Home> {
                   Expanded(
                   child: Align(
                     alignment: Alignment.bottomCenter,
-                      child: Text('Hello ',
+                      child: Text('Hello '+_userName().toString(),
                       style: TextStyle(color: Colors.white),
                       ),
                     ),

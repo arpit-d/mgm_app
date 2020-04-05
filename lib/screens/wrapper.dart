@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mgm_app/models/user.dart';
 import 'package:provider/provider.dart';
 
-import 'home/dr_home.dart';
+import 'home/dr_pages/dr_home.dart';
 
 class Wrapper extends StatelessWidget {
   @override

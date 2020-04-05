@@ -61,6 +61,7 @@ class _ConsultFollowUpBodyPageState extends State<ConsultFollowUpBodyPage> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
+    print(user.name);
     return Container(
         child: StreamBuilder(
             stream: vacc
@@ -88,7 +89,8 @@ class _ConsultFollowUpBodyPageState extends State<ConsultFollowUpBodyPage> {
                                 ),
                               );
                             }),
-                      )
+                      ),
+                      
                     ],
                   ),
                 );
@@ -180,10 +182,14 @@ class _ModalContentState extends State<ModalContent> {
   getRealDate(_date) {
     var day = DateFormat('EEEE').format(_date);
     print(day);
-
     var realDate = '${_date.day} - ${_date.month} - ${_date.year} : $day';
     print(realDate);
     return realDate;
+  }
+  getDrDate(_date) {
+    var drDate = '${_date.day}-${_date.month}-${_date.year}';
+    print('$drDate');
+    return drDate;
   }
 
   int hour, minute, _hour, _minute;
@@ -205,6 +211,7 @@ class _ModalContentState extends State<ModalContent> {
   final AuthService _auth = AuthService();
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -357,6 +364,8 @@ class _ModalContentState extends State<ModalContent> {
                     _submit(manager, dateNo);
                     await _auth.enterConsultationData(
                         _selectedAppt.type, realDate, hm);
+                        await _auth.drConsult(
+                        _selectedAppt.type, realDate, hm, getDrDate(_date), user.name);
                         print('hello');
                         Navigator.of(context).pop();
                     }

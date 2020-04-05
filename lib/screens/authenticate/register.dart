@@ -168,6 +168,7 @@ class _RegisterState extends State<Register> {
                             dynamic result =
                                 await _auth.registerWithEmailAndPassword(
                                     email, password, userName, dateTime, deviceToken);
+                                    
                             if (result == null) {
                               setState(() {
                                 error = 'Invalid Email';
