@@ -73,7 +73,7 @@ class _DrHomePageState extends State<DrHomePage> {
                   ListTile(
                     contentPadding: EdgeInsets.fromLTRB(11, 3, 3, 3),
                     title: Text(
-                      'Vaccination Reminder',
+                      'Today\'s Appointments',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -81,7 +81,7 @@ class _DrHomePageState extends State<DrHomePage> {
                       ),
                       ),
                       subtitle: Text(
-                        'List of all types of vaccinations administered from birth to present age',
+                        'List of all patients with an appointment today',
                         style: TextStyle(
                           fontSize: 17
                         ),

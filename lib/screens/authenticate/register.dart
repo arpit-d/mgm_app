@@ -24,6 +24,7 @@ class _RegisterState extends State<Register> {
   DateTime _dateTime;
   var dateTime;
   String deviceToken = '';
+  
 
   String convertDate(DateTime _dateTime) {
     
@@ -164,7 +165,7 @@ class _RegisterState extends State<Register> {
                               loading = true;
                             });
                             @override
-
+                            
                             dynamic result =
                                 await _auth.registerWithEmailAndPassword(
                                     email, password, userName, dateTime, deviceToken);

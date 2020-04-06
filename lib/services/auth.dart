@@ -58,7 +58,7 @@ Future<String> inputData() async {
 
       final FirebaseUser user = await FirebaseAuth.instance.currentUser();
       final String uid = user.uid.toString();
-      await DatabaseService(uid: user.uid).drConsult(type, realDate, hm, drDate, name);
+      await DatabaseService(uid: user.uid).drConsult(type, realDate, hm, drDate, name, uid);
       return _userFromFirebaseUser(user);
   }
 

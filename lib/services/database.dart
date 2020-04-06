@@ -46,12 +46,13 @@ class DatabaseService {
       'time': hm,
     });
   }
-  Future drConsult(String type, String realDate, String hm, String drDate, String name) async {
+  Future drConsult(String type, String realDate, String hm, String drDate, String name, String uid) async {
     return await Firestore.instance.collection('DrConsult').document('data').collection('$drDate').document().setData({
       'patientName': name,
       'type': type,
       'date': realDate,
       'time': hm,
+      'uid': uid
     });
   }
 }
