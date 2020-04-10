@@ -13,11 +13,12 @@ class Wrapper extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final user = Provider.of<User>(context);
+    
    
     if(user == null){
       return Authenticate();
     }
-    else if(user.uid == 'Ja2GSZoa5oVKWoscwqHKz9D47ig1' || user.uid=='BOqOM7WkCYVumNlr7PUpmexbmMY2'){
+    else if(user.uid == 'JFolRdBc9iVASTD9MztQziwt8tw2' || user.uid=='MBophNUiUkTSJgFt39YylbfD6Rz1'){
       return DrHome();
     }
     else {

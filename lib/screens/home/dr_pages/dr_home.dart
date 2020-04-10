@@ -15,6 +15,7 @@ class _DrHomeState extends State<DrHome> {
    final AuthService _auth = AuthService();
 
    FirebaseUser user;
+   
 
 
   @override
@@ -28,8 +29,9 @@ class _DrHomeState extends State<DrHome> {
               FlatButton.icon(onPressed: ()async{
                 await _auth.signOut();
               }, 
-              icon: Icon(Icons.person), 
-              label: Text('logout'))
+              icon: Icon(Icons.person, color: Colors.white,), 
+              
+              label: Text('logout', style: TextStyle(color: Colors.white),))
         ]
       ),
       body: DrHomePage(),

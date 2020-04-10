@@ -61,7 +61,7 @@ class _ConsultFollowUpBodyPageState extends State<ConsultFollowUpBodyPage> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
-    print(user.name);
+    
     return Container(
         child: StreamBuilder(
             stream: vacc
@@ -212,7 +212,7 @@ class _ModalContentState extends State<ModalContent> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
-    print(user.name);
+    
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -367,7 +367,7 @@ class _ModalContentState extends State<ModalContent> {
                         _selectedAppt.type, realDate, hm);
                         await _auth.drConsult(
                         _selectedAppt.type, realDate, hm, getDrDate(_date), user.name.toString());
-                        print('hello');
+                        
                         Navigator.of(context).pop();
                     }
                   },

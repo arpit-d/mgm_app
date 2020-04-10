@@ -70,6 +70,13 @@ Future<String> inputData() async {
       return _userFromFirebaseUser(user);
   }
 
+  Future consultReport(String docName, String diagnosis,String advice,String userUid) async {
+    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+      final String uid = user.uid.toString();
+      await DatabaseService(uid: user.uid).updateConsultReport(docName, diagnosis, advice, userUid);
+      return _userFromFirebaseUser(user);
+  }
+
   //register with email/pass
   Future registerWithEmailAndPassword(String email, String password, String userName, String dateTime, String deviceToken) async {
     try{

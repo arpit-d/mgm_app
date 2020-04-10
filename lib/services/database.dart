@@ -55,4 +55,12 @@ class DatabaseService {
       'uid': uid
     });
   }
+
+  Future updateConsultReport(String docName, String diagnosis,String advice,String userUid) async {
+    return await Firestore.instance.collection('ConsultReport').document('data').collection('$userUid').document().setData({
+      'docName': docName,
+      'diagnosis': diagnosis,
+      'advice': advice,
+    });
+  }
 }
